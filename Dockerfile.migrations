@@ -1,0 +1,17 @@
+# Используем базовый образ python
+FROM python:3.10-slim-buster
+
+# Устанавливаем переменную окружения для пути к приложению Django
+ENV PYTHONUNBUFFERED=1 DJANGO_SETTINGS_MODULE=lastwork.settings
+
+# Устанавливаем рабочую директорию в /app
+WORKDIR /app
+
+# Устанавливаем зависимости для применения миграций
+RUN pip install psycopg2-binary
+
+# Копируем приложение Django в контейнер
+COPY . /app
+
+# Команда для применения миграций
+CMD ["python", "manage.py", "migrate"]
