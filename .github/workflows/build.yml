@@ -6,7 +6,17 @@ jobs:
     steps:
       - name: clone code
         uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+      - name: Set up environment
+        run: echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> $GITHUB_ENV
       - name: docker build
+        env:
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
         run: docker build -t molatok/lastwork:$GITHUB_REF_NAME-$GITHUB_RUN_ID .
       - name: docker push
+        env:
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
         run: docker push molatok/lastwork:$GITHUB_REF_NAME-$GITHUB_RUN_ID
