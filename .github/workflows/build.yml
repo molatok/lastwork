@@ -13,5 +13,5 @@ jobs:
           POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
           POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
           POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
-          SECRET_KEY: $secrets.SECRET_KEY
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
         run: docker build -t molatok/lastwork:$GITHUB_REF_NAME-$GITHUB_RUN_ID .
