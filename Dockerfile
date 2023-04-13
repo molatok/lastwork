@@ -21,10 +21,14 @@ ENV STATIC_ROOT /app/staticfiles
 # Запуск команды для сборки статических файлов
 RUN python manage.py collectstatic --no-input
 
+# Запуск команды для сборки статических файлов
+ARG SECRET_KEY
+ENV SECRET_KEY $SECRET_KEY
+RUN python manage.py collectstatic --no-input
+
 # Открываем порт для доступа к приложению
 EXPOSE 8000
 
 # Запуск команды для запуска сервера Django
 CMD ["sh", "-c", "sleep 5 && python manage.py runserver 0.0.0.0:8000"]
 
-ENV SECRET_KEY $SECRET_KEY
