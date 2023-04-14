@@ -15,3 +15,7 @@ jobs:
           POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
           SECRET_KEY: ${{ secrets.SECRET_KEY }}
         run: docker build --build-arg SECRET_KEY=${{ secrets.SECRET_KEY }} -t molatok/lastwork:$GITHUB_REF_NAME-$GITHUB_RUN_ID .
+      - name: docker login
+        run: echo ${{ secrets.ACCESS_TOKEN }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+      - name: docker push
+        run: docker push molatok/lastwork:$GITHUB_REF_NAME-$GITHUB_RUN_ID
