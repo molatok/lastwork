@@ -22,6 +22,8 @@ ENV STATIC_ROOT /app/staticfiles
 ARG SECRET_KEY
 ENV SECRET_KEY=$SECRET_KEY
 
+ENV POSTGRES_DB=$POSTGRES_DB
+
 # Запуск команды для сборки статических файлов
 RUN python manage.py collectstatic --no-input
 
