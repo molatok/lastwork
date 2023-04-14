@@ -18,6 +18,10 @@ COPY . .
 RUN mkdir -p /app/staticfiles
 ENV STATIC_ROOT /app/staticfiles
 
+# Установка переменной окружения SECRET_KEY
+ARG SECRET_KEY
+ENV SECRET_KEY=$SECRET_KEY
+
 # Запуск команды для сборки статических файлов
 RUN python manage.py collectstatic --no-input
 
