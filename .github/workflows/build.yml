@@ -54,6 +54,6 @@ jobs:
           password: ${{ secrets.SSH_PASSWORD }}
           script: |
             cd lastwork
-            sudo -s docker-compose down
-            sudo -s docker-compose up --build -d
+            sudo -S docker-compose down
+            sudo -S docker-compose up --build -d
             
