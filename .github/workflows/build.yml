@@ -34,7 +34,7 @@ jobs:
         uses: actions/checkout@v3
       - name: render configs
         run: |
-          mkdir lastwork
+          cd lastwork
           cat docker-compose-ci.yaml | envsubst > lastwork/docker-compose.yaml
           cat .env | envsubst > lastwork/.env
       - name: copy file to server
