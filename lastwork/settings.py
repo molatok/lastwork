@@ -142,3 +142,5 @@ AUTH_USER_MODEL = 'core.CustomUser'
 
 CORS_ALLOW_ALL_ORIGINS = True
 
+
+
