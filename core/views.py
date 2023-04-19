@@ -9,3 +9,6 @@ class UserRegistrationView(CreateAPIView):
     """View для регистрации пользователя"""
     serializer_class = UserRegistrationSerializer
     permission_classes = (AllowAny,)
+
+
+
