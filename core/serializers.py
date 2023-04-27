@@ -1,6 +1,8 @@
 from django.contrib.auth.password_validation import validate_password
+from django.contrib.auth import authenticate
 from django.core.exceptions import ValidationError
 from rest_framework import serializers
+from rest_framework.exceptions import AuthenticationFailed
 from .models import CustomUser
 
 
@@ -34,3 +36,22 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         user.set_password(validated_data['password'])
         user.save()
         return user
+
+
+class UserLoginSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(required=True)
+    password = serializers.CharField(required=True, write_only=True)
+
+    def create(self, validated_data):
+        user = authenticate(
+            username=validated_data['username'],
+            password=validated_data['password']
+        )
+
+        if not user:
+            raise AuthenticationFailed
+        return user
+
+    class Meta:
+        model = CustomUser
+        fields = "__all__"
