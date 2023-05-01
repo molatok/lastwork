@@ -16,42 +16,32 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         ordering = ['username']
 
     def validate(self, attrs):
+        password_repeat = attrs.pop('password_repeat', None)
         password = attrs.get('password')
-        password_repeat = attrs.get('password_repeat')
 
-        if password != password_repeat:
-            raise serializers.ValidationError("Пароли не совпадают.")
-
-        attrs['password'] = CustomUser.objects.make_random_password()  # Генерация случайного пароля
-
+        if password_repeat != password:
+            raise ValidationError('Passwords do not match')
         return attrs
 
-    def create(self, validated_data):
-        user = CustomUser(
-            username=validated_data['username'],
-            email=validated_data['email'],
-            first_name=validated_data['first_name'],
-            last_name=validated_data['last_name']
-        )
-        user.set_password(validated_data['password'])
-        user.save()
+    def create(self, validated_data: dict) -> CustomUser:
+        user = CustomUser.objects.create_user(**validated_data)
         return user
 
 
 class UserLoginSerializer(serializers.ModelSerializer):
-    username = serializers.CharField(required=True)
-    password = serializers.CharField(required=True, write_only=True)
-
-    def create(self, validated_data):
-        user = authenticate(
-            username=validated_data['username'],
-            password=validated_data['password']
-        )
-
-        if not user:
-            raise AuthenticationFailed
-        return user
+    username = serializers.CharField(write_only=True)
+    password = serializers.CharField(write_only=True)
 
     class Meta:
         model = CustomUser
-        fields = "__all__"
+        fields = ('username', 'password')
+
+    def validate(self, attrs: dict) -> dict:
+        username = attrs.get('username')
+        password = attrs.get('password')
+        user = authenticate(username=username, password=password)
+        if not user:
+            raise ValidationError('password or username is not correct')
+        attrs["user"] = user
+        return attrs
+
