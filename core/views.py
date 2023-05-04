@@ -1,11 +1,13 @@
 from django.contrib.auth import authenticate, login
 from django.shortcuts import render
-from rest_framework import generics
+from rest_framework import generics, status, permissions
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.generics import CreateAPIView
-from .serializers import UserRegistrationSerializer, UserLoginSerializer
+from rest_framework.permissions import IsAuthenticated
+from .serializers import UserRegistrationSerializer, UserLoginSerializer, UserRetrieveSerializer
 from django.contrib.sites import requests
+from .models import CustomUser
 
 
 class UserRegistrationView(CreateAPIView):
@@ -15,6 +17,7 @@ class UserRegistrationView(CreateAPIView):
 
 
 class UserLoginView(generics.CreateAPIView):
+    """View для аутентификации пользователя"""
     serializer_class = UserLoginSerializer
 
     def post(self, request: requests, *args: str, **kwargs: int) -> Response:
@@ -24,3 +27,16 @@ class UserLoginView(generics.CreateAPIView):
         login(request, user=user)
         return Response({'message': 'User logged in successfully'})
 
+
+class UserRetrieveView(generics.RetrieveUpdateDestroyAPIView):
+    """View для изменения профиля пользователя"""
+    queryset = CustomUser.objects.all()
+    serializer_class = UserRetrieveSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        return self.request.user
+
+    def delete(self, request, *args, **kwargs):
+        logout(request)
+        return Response(status=status.HTTP_204_NO_CONTENT)
