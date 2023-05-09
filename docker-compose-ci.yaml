@@ -10,7 +10,7 @@ services:
     volumes:
       - ./src/static/:/opt/static/
   api:
-    image: molatok/lastwork
+    image: molatok/lastwork:$GITHUB_REF_NAME-$GITHUB_RUN_ID
     env_file:
       - .env
     environment:
