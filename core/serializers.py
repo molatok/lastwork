@@ -51,3 +51,25 @@ class UserRetrieveSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = ('id', 'username', 'first_name', 'last_name', 'email')
+
+
+class UserPasswordUpdateSerializer(serializers.Serializer):
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    old_password = serializers.CharField(min_length=1, required=True, write_only=True)
+    new_password = serializers.CharField(min_length=1, required=True, write_only=True, validators=[validate_password])
+
+    def validate(self, attrs: dict) -> dict:
+        """
+        Переопределил пустой validate для проверки пароля, так же достаю и удаляю password_repeat.
+        """
+        password_old = attrs.get('old_password')
+
+        user: User = self.instance
+        if not user.check_password(password_old):
+            raise ValidationError({'old_password': 'is incorrect'})
+        return attrs
+
+    def update(self, instance: CustomUser, validated_data: dict):
+        instance.set_password(validated_data['new_password'])
+        instance.save(update_fields=['password'])
+        return instance
