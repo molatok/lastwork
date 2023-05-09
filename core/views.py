@@ -3,9 +3,9 @@ from django.shortcuts import render
 from rest_framework import generics, status, permissions
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-from rest_framework.generics import CreateAPIView
+from rest_framework.generics import CreateAPIView, UpdateAPIView
 from rest_framework.permissions import IsAuthenticated
-from .serializers import UserRegistrationSerializer, UserLoginSerializer, UserRetrieveSerializer
+from .serializers import UserRegistrationSerializer, UserLoginSerializer, UserRetrieveSerializer, UserPasswordUpdateSerializer
 from django.contrib.sites import requests
 from .models import CustomUser
 
@@ -40,3 +40,12 @@ class UserRetrieveView(generics.RetrieveUpdateDestroyAPIView):
     def delete(self, request, *args, **kwargs):
         logout(request)
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class UserPasswordUpdateView(UpdateAPIView):
+    queryset = CustomUser.objects.all()
+    permission_classes = [IsAuthenticated]
+    serializer_class = UserPasswordUpdateSerializer
+
+    def get_object(self) -> CustomUser:
+        return self.request.user
