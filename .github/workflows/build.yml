@@ -49,7 +49,7 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           password: ${{ secrets.SSH_PASSWORD }}
           script: |
-            cd todolist
+            cd lastwork
             echo ${{ secrets.SSH_PASSWORD }} | docker-compose down
             echo ${{ secrets.SSH_PASSWORD }} | docker-compose up --build -d
       - name: clear after deploy
