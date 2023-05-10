@@ -24,7 +24,6 @@ services:
         condition: service_healthy
     ports:
       - "8000:8000"
-
   migrations:
     image: molatok/lastwork:$GITHUB_REF_NAME-$GITHUB_RUN_ID
     depends_on:
