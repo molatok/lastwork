@@ -26,7 +26,6 @@ jobs:
       SECRET_KEY: ${{ secrets.SECRET_KEY }}
       SOCIAL_AUTH_VK_OAUTH2_KEY: ${{ secrets.SOCIAL_AUTH_VK_OAUTH2_KEY }}
       SOCIAL_AUTH_VK_OAUTH2_SECRET: ${{ secrets.SOCIAL_AUTH_VK_OAUTH2_SECRET }}
-      POSTGRES_HOST_AUTH_METHOD: ${{ secrets.POSTGRES_HOST_AUTH_METHOD }}
       SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
       SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
       HOST: ${{ secrets.HOST }}
