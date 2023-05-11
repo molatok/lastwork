@@ -7,16 +7,9 @@ jobs:
       - name: clone code
         uses: actions/checkout@v2
       - name: docker build
-        env:
-          DEBUG: ${{ secrets.DEBUG }}
-          POSTGRES_HOST: ${{ secrets.POSTGRES_HOST }}
-          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
-          SECRET_KEY: ${{ secrets.SECRET_KEY }}
-        run: docker build --build-arg SECRET_KEY=${{ secrets.SECRET_KEY }} -t molatok/lastwork:$GITHUB_REF_NAME-$GITHUB_RUN_ID .
+        run: docker build -t molatok/lastwork:$GITHUB_REF_NAME-$GITHUB_RUN_ID .
       - name: docker login
-        run: echo ${{ secrets.ACCESS_TOKEN }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+        run: echo ${{ secrets.DOCKER_TOKEN }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
       - name: docker push
         run: docker push molatok/lastwork:$GITHUB_REF_NAME-$GITHUB_RUN_ID
   deploy:
@@ -24,7 +17,6 @@ jobs:
     needs: build_and_push
     env:
       DEBUG: ${{ secrets.DEBUG }}
-      ALLOWED_HOSTS: ${{ secrets.HOSTS }}
       POSTGRES_HOST: ${{ secrets.POSTGRES_HOST }}
       POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
       POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
@@ -32,30 +24,31 @@ jobs:
       SECRET_KEY: ${{ secrets.SECRET_KEY }}
       SOCIAL_AUTH_VK_OAUTH2_KEY: ${{ secrets.SOCIAL_AUTH_VK_OAUTH2_KEY }}
       SOCIAL_AUTH_VK_OAUTH2_SECRET: ${{ secrets.SOCIAL_AUTH_VK_OAUTH2_SECRET }}
+      TG_BOT_API_TOKEN: ${{ secrets.TG_BOT_API_TOKEN }}
+
     steps:
       - name: clone code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
       - name: render configs
         run: |
-          mkdir -p lastwork
-          cat docker-compose-ci.yaml | envsubst > lastwork/docker-compose.yaml
-          cat .env | envsubst > lastwork/.env
-      - name: copy file to server
+          mkdir deploy
+          cat docker-compose-ci.yml | envsubst > deploy/docker-compose.yml
+      - name: copy files to server
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          password: ${{ secrets.SSH_PASSWORD }}
-          source: "lastwork/docker-compose.yaml, lastwork/.env"
-          target: "lastwork"
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          source: "deploy/docker-compose.yml"
+          target: "task_manager_app"
           strip_components: 1
-      - name: lastwork app
+      - name: deploy app
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          password: ${{ secrets.SSH_PASSWORD }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
           script: |
-            cd lastwork
-            docker-compose down
-            docker-compose up -d
+            cd task_manager_app
+            echo ${{ secrets.PASSWORD }} | sudo -S docker-compose down
+            echo ${{ secrets.PASSWORD }} | sudo -S docker-compose up -d
