@@ -53,6 +53,6 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           password: ${{ secrets.SSH_PASSWORD }}
           script: |
-            cd todolist
+            cd lastwork
             docker-compose down
             docker-compose up --build -d
