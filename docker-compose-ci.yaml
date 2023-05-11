@@ -2,65 +2,73 @@ version: "3.9"
 
 services:
   frontend:
-    image: sermalenk/skypro-front:lesson-35
-    ports:
-      - "80:80"
+    image: sermalenk/skypro-front:lesson-34
+    restart: always
     depends_on:
       - api
-    volumes:
-      - ./src/static/:/opt/static/
+    ports:
+      - "80:80"
+
   api:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    env_file:
-      - .env
+    image: molatok/lastwork:$GITHUB_REF_NAME-$GITHUB_RUN_ID
+    restart: always
     environment:
-      POSTGRES_DB: ${POSTGRES_DB}
+      DEBUG: ${DEBUG}
+      POSTGRES_HOST: ${POSTGRES_HOST}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_HOST: ${POSTGRES_HOST}
+      POSTGRES_DB: ${POSTGRES_DB}
+      SECRET_KEY: ${SECRET_KEY}
       SOCIAL_AUTH_VK_OAUTH2_KEY: ${SOCIAL_AUTH_VK_OAUTH2_KEY}
       SOCIAL_AUTH_VK_OAUTH2_SECRET: ${SOCIAL_AUTH_VK_OAUTH2_SECRET}
+      TG_BOT_API_TOKEN: ${TG_BOT_API_TOKEN}
     depends_on:
       db:
         condition: service_healthy
+      migrations:
+        condition: service_completed_successfully
     ports:
       - "8000:8000"
+    command: ["python3", "manage.py", "runserver", "0.0.0.0:8000"]
+
   migrations:
-    build: .
+    image: molatok/lastwork:$GITHUB_REF_NAME-$GITHUB_RUN_ID
+    environment:
+      DEBUG: ${DEBUG}
+      POSTGRES_HOST: ${POSTGRES_HOST}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_PORT: ${POSTGRES_PORT}
+      DATABASE_URL: ${DATABASE_URL}
+      SECRET_KEY: ${SECRET_KEY}
+      SOCIAL_AUTH_VK_OAUTH2_KEY: ${SOCIAL_AUTH_VK_OAUTH2_KEY}
+      SOCIAL_AUTH_VK_OAUTH2_SECRET: ${SOCIAL_AUTH_VK_OAUTH2_SECRET}
     depends_on:
       db:
         condition: service_healthy
-    env_file:
-      - .env
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_HOST: ${POSTGRES_HOST}
-      SOCIAL_AUTH_VK_OAUTH2_KEY: ${SOCIAL_AUTH_VK_OAUTH2_KEY}
-      SOCIAL_AUTH_VK_OAUTH2_SECRET: ${SOCIAL_AUTH_VK_OAUTH2_SECRET}
-    command: python manage.py migrate
+    command: >
+      "sh", "-c", "sleep 5 && python3 manage.py migrate"
+
   db:
     image: postgres:latest
-    env_file:
-      - .env
     environment:
-      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_HOST: ${POSTGRES_HOST}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_HOST: ${POSTGRES_HOST}
-    volumes:
-      - ./pg_data:/var/lib/postgresql/data
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_PORT: ${POSTGRES_PORT}
+      DATABASE_URL: ${DATABASE_URL}
     restart: always
     ports:
-      - "5432:5432"
+      - 5432:5432
+    volumes:
+      - ./pg_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
       interval: 5s
-      timeout: 10s
+      timeout: 5s
       retries: 5
-
 volumes:
-  lastwork-db:
+  pg_data:
+  static_data:
