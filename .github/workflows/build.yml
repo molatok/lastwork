@@ -45,15 +45,15 @@ jobs:
           target: "lastwork"
           strip_components: 1
       - name: run docker-compose
-          uses: appleboy/ssh-action@master
-          with:
-            host: ${{ secrets.HOST }}
-            username: ${{ secrets.SSH_USERNAME }}
-            password: ${{ secrets.SSH_PASSWORD }}
-            script: |
-              cd todolist
-              echo ${{ secrets.SSH_PASSWORD }} | docker-compose down
-              echo ${{ secrets.SSH_PASSWORD }} | docker-compose up --build -d
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          script: |
+            cd todolist
+            echo ${{ secrets.SSH_PASSWORD }} | docker-compose down
+            echo ${{ secrets.SSH_PASSWORD }} | docker-compose up --build -d
       - name: clear after deploy
         if: always()
         uses: appleboy/ssh-action@master
