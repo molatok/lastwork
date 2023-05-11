@@ -37,15 +37,13 @@ jobs:
           mkdir deploy
           cat docker-compose-ci.yaml | envsubst > deploy/docker-compose.yaml
           cat .docker_ci_env | envsubst > deploy/.env
-          cat docker-compose-ci.yaml | envsubst > docker-compose.yaml
-          cat .docker_ci_env | envsubst > .env
       - name: copy files to server
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           password: ${{ secrets.SSH_PASSWORD }}
-          source: "./docker-compose.yaml,./.env"
+          source: "deploy/docker-compose.yaml,deploy/.env"
           target: "lastwork"
           strip_components: 1
       - name: run docker-compose
