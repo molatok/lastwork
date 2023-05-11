@@ -56,4 +56,13 @@ jobs:
             cd lastwork
             echo ${{ secrets.SSH_PASSWORD }} | docker-compose down
             echo ${{ secrets.SSH_PASSWORD }} | docker-compose up --build -d
-      
+
+      - name: clear after deploy
+        if: always()
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          script: |
+            docker system prune -a -f
