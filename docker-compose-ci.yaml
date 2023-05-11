@@ -2,15 +2,16 @@ version: "3.9"
 
 services:
   frontend:
-    image: sermalenk/skypro-front:lesson-35
-    ports:
-      - "80:80"
+    image: sermalenk/skypro-front:lesson-38
+    restart: always
     depends_on:
       - api
-    volumes:
-      - ./src/static/:/opt/static/
+    ports:
+      - "80:80"
+      -
   api:
     image: molatok/lastwork:$GITHUB_REF_NAME-$GITHUB_RUN_ID
+    restart: always
     env_file:
       - .env
     environment:
@@ -19,13 +20,14 @@ services:
       ALLOWED_HOSTS: ${HOSTS}
       SOCIAL_AUTH_VK_OAUTH2_KEY: ${SOCIAL_AUTH_VK_OAUTH2_KEY}
       SOCIAL_AUTH_VK_OAUTH2_SECRET: ${SOCIAL_AUTH_VK_OAUTH2_SECRET}
+
     depends_on:
       db:
         condition: service_healthy
+      migrations:
+        condition: service_completed_successfully
     ports:
       - "8000:8000"
-    volumes:
-      - ../lastwork/:/app/
 
   migrations:
     image: molatok/lastwork:$GITHUB_REF_NAME-$GITHUB_RUN_ID
