@@ -18,7 +18,7 @@ services:
       DEBUG: $DEBUG
       SECRET_KEY: $SECRET_KEY
       ALLOWED_HOSTS: "$ALLOWED_HOSTS"
-      POSTGRES_DB: $DB_NAME
+      POSTGRES_DB: $POSTGRES_DB
       POSTGRES_PASSWORD: $DB_PASSWORD
       POSTGRES_USER: $DB_USER
       POSTGRES_HOST: $POSTGRES_HOST
@@ -32,13 +32,12 @@ services:
       SECRET_KEY: $SECRET_KEY
       ALLOWED_HOSTS: "$ALLOWED_HOSTS"
       POSTGRES_PASSWORD: $DB_PASSWORD
-      POSTGRES_DB: $DB_NAME
+      POSTGRES_DB: $POSTGRES_DB
       POSTGRES_USER: $DB_USER
       POSTGRES_HOST: $POSTGRES_HOST
       POSTGRES_PORT: $POSTGRES_PORT
       SOCIAL_AUTH_VK_OAUTH2_KEY: $SOCIAL_AUTH_VK_OAUTH2_KEY
       SOCIAL_AUTH_VK_OAUTH2_SECRET: $SOCIAL_AUTH_VK_OAUTH2_SECRET
-      BOT_TOKEN: $BOT_TOKEN
     depends_on:
       db:
         condition: service_healthy
@@ -64,6 +63,7 @@ services:
       timeout: 10s
       retries: 5
 
-  volumes:
-    todo-db:
+
+volumes:
+  lastwork-db:
 
