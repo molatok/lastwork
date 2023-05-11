@@ -8,7 +8,7 @@ COPY requirements.txt .
 
 RUN pip install -r requirements.txt
 
-COPY todolist/ .
+COPY lastwork/ .
 
 EXPOSE 8000
 
