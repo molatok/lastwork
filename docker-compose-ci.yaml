@@ -25,23 +25,6 @@ services:
       POSTGRES_PORT: $POSTGRES_PORT
       SOCIAL_AUTH_VK_OAUTH2_KEY: $SOCIAL_AUTH_VK_OAUTH2_KEY
       SOCIAL_AUTH_VK_OAUTH2_SECRET: $SOCIAL_AUTH_VK_OAUTH2_SECRET
-      BOT_TOKEN: $BOT_TOKEN
-  bot:
-    image: molatok/lastwork:$GITHUB_REF_NAME-$GITHUB_RUN_ID
-    depends_on:
-      db:
-        condition: service_healthy
-      migrations:
-        condition: service_completed_successfully
-    environment:
-      DEBUG: $DEBUG
-      SECRET_KEY: $SECRET_KEY
-      ALLOWED_HOSTS: "$ALLOWED_HOSTS"
-      SOCIAL_AUTH_VK_OAUTH2_KEY: $SOCIAL_AUTH_VK_OAUTH2_KEY
-      SOCIAL_AUTH_VK_OAUTH2_SECRET: $SOCIAL_AUTH_VK_OAUTH2_SECRET
-      BOT_TOKEN: $BOT_TOKEN
-    command: >
-      bash -c 'python3 manage.py runbot'
   migrations:
     image: molatok/lastwork:$GITHUB_REF_NAME-$GITHUB_RUN_ID
     environment:
@@ -63,21 +46,24 @@ services:
       bash -c 'python manage.py migrate'
   db:
     image: postgres:latest
+    env_file:
+      - .env
     environment:
-      POSTGRES_PASSWORD: $DB_PASSWORD
-      POSTGRES_DB: $DB_NAME
-      POSTGRES_USER: $DB_USER
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_HOST: ${POSTGRES_HOST}
+    volumes:
+      - ./pg_data:/var/lib/postgresql/data
+    restart: always
     ports:
       - "5432:5432"
-    restart: always
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER}  -d ${DB_NAME}" ]
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER}" ]
       interval: 5s
-      timeout: 5s
+      timeout: 10s
       retries: 5
-    volumes:
-      - pg_data:/var/lib/postgresql/data
 
-volumes:
-  pg_data:
+  volumes:
+    todo-db:
 
