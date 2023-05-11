@@ -1,17 +1,15 @@
-name: Build and deploy workflow
-on:
-  - push
-
+name: Build and deploy action
+on: [push]
 jobs:
   build_and_push:
     runs-on: ubuntu-latest
     steps:
       - name: clone code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
       - name: docker build
         run: docker build -t molatok/lastwork:$GITHUB_REF_NAME-$GITHUB_RUN_ID .
       - name: docker login
-        run: echo ${{ secrets.ACCESS_TOKEN }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+        run: echo ${{ secrets.DOCKERHUB_TOKEN }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
       - name: docker push
         run: docker push molatok/lastwork:$GITHUB_REF_NAME-$GITHUB_RUN_ID
   deploy:
@@ -19,40 +17,49 @@ jobs:
     needs: build_and_push
     env:
       DEBUG: ${{ secrets.DEBUG }}
-      SOCIAL_AUTH_VK_OAUTH2_KEY: ${{ secrets.SOCIAL_AUTH_VK_OAUTH2_KEY }}
-      SOCIAL_AUTH_VK_OAUTH2_SECRET: ${{ secrets.SOCIAL_AUTH_VK_OAUTH2_SECRET }}
       SECRET_KEY: ${{ secrets.SECRET_KEY }}
       ALLOWED_HOSTS: ${{ secrets.ALLOWED_HOSTS }}
-      DATABASE_URL: ${{ secrets.DATABASE_URL }}
-      POSTGRES_HOST: ${{ secrets.HOST }}
-      POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-      POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
-      BOT_TOKEN: ${{ secrets.BOT_TOKEN}}
+      POSTGRES_HOST: ${{ secrets.POSTGRES_HOST }}
+      POSTGRES_PORT: ${{ secrets.PORT }}
+      DB_USER: postgres
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      DB_NAME: ${{ secrets.DB_NAME }}
+      SOCIAL_AUTH_VK_OAUTH2_KEY: ${{ secrets.SOCIAL_AUTH_VK_OAUTH2_KEY }}
+      SOCIAL_AUTH_VK_OAUTH2_SECRET: ${{ secrets.SOCIAL_AUTH_VK_OAUTH2_SECRET }}
+      BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
     steps:
       - name: clone code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
       - name: render configs
         run: |
           mkdir deploy
-          cat docker-compose-ci.yaml | envsubst > ./docker-compose.yaml
-          cat .env | envsubst > ./.env
-      - name: copy file to server
+          cat docker-compose-ci.yaml | envsubst > deploy/docker-compose.yaml
+          cat .docker_ci_env | envsubst > deploy/.env
+      - name: clone files to server
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           password: ${{ secrets.SSH_PASSWORD }}
           source: "deploy/docker-compose.yaml,deploy/.env"
-          target: "lastwork"
+          target: "todolist"
           strip_components: 1
-      - name: deploy app
+      - name: run docker-compose
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           password: ${{ secrets.SSH_PASSWORD }}
           script: |
-            cd lastwork
-            docker-compose down
-            docker-compose up --build -d
+            cd todolist
+            echo ${{ secrets.SSH_PASSWORD }} | docker-compose down
+            echo ${{ secrets.SSH_PASSWORD }} | docker-compose up --build -d
+      - name: clear after deploy
+        if: always()
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          script: |
+            docker system prune -a -f
