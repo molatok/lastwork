@@ -59,3 +59,4 @@ jobs:
             cd lastwork
             docker-compose down
             docker-compose up -d
+
