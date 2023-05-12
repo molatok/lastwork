@@ -49,3 +49,4 @@ class UserPasswordUpdateView(UpdateAPIView):
 
     def get_object(self) -> CustomUser:
         return self.request.user
+
