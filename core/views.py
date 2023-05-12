@@ -1,4 +1,4 @@
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render
 from rest_framework import generics, status, permissions
 from rest_framework.permissions import AllowAny
