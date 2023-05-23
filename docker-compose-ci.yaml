@@ -29,8 +29,7 @@ services:
         condition: service_completed_successfully
     ports:
       - "8000:8000"
-    command: >
-      sh -c "python3 manage.py migrate && python3 manage.py runserver 0.0.0.0:8000"
+    command: ["python3", "manage.py", "runserver", "0.0.0.0:8000"]
 
   migrations:
     image: molatok/lastwork:$GITHUB_REF_NAME-$GITHUB_RUN_ID
