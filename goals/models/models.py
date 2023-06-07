@@ -2,6 +2,7 @@ from django.db import models
 from django.utils import timezone
 from core.models import CustomUser
 from django.utils import timezone
+from .board import Board
 
 
 class GoalCategory(models.Model):
@@ -9,6 +10,7 @@ class GoalCategory(models.Model):
         verbose_name = "Категория"
         verbose_name_plural = "Категории"
 
+    board = models.ForeignKey(Board, verbose_name="Доска", on_delete=models.PROTECT, related_name="categories")
     title = models.CharField(verbose_name="Название", max_length=255)
     user = models.ForeignKey(CustomUser, verbose_name="Автор", on_delete=models.PROTECT)
     is_deleted = models.BooleanField(verbose_name="Удалена", default=False)
@@ -75,3 +77,5 @@ class GoalComment(models.Model):
             self.created = timezone.now()
         self.updated = timezone.now()
         return super().save(*args, **kwargs)
+
+
