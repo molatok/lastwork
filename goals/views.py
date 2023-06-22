@@ -139,7 +139,7 @@ class GoalCommentListView(ListAPIView):
 
     def get_queryset(self):
         goal_id = self.request.query_params.get("goal_id")
-        queryset = GoalComment.objects.filter(user=self.request.user)
+        queryset = GoalComment.objects.all()
         if goal_id:
             queryset = queryset.filter(goal_id=goal_id)
         return queryset
