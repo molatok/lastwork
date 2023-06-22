@@ -138,10 +138,8 @@ class GoalCommentListView(ListAPIView):
     ordering = ["-created"]
 
     def get_queryset(self):
-        goal_id = self.request.query_params.get("goal_id")
-        queryset = GoalComment.objects.filter(is_deleted=False)
-        if goal_id:
-            queryset = queryset.filter(goal_id=goal_id)
+        goal_id = self.kwargs.get("goal_id")
+        queryset = GoalComment.objects.filter(is_deleted=False, goal_id=goal_id)
         return queryset
 
 
