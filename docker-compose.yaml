@@ -35,7 +35,7 @@ services:
       SOCIAL_AUTH_VK_OAUTH2_SECRET: ${SOCIAL_AUTH_VK_OAUTH2_SECRET}
     command: python manage.py migrate
   db:
-    image: postgres:2.31
+    image: postgres:latest
     env_file:
       - .env
     environment:

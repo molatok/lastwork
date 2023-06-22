@@ -51,5 +51,7 @@ class CommentPermissions(permissions.BasePermission):
         if not request.user.is_authenticated:
             return False
         if request.method in permissions.SAFE_METHODS:
-            return True
+            return BoardParticipant.objects.filter(
+                user=request.user, board=obj.goal.category.board
+            ).exists() and obj.goal == view.get_object()
         return obj.user == request.user

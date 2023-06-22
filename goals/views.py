@@ -12,7 +12,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Q
 from rest_framework import filters
 from .filters import GoalDateFilter
-from .permissions import BoardPermissions, CategoryPermissions
+from .permissions import BoardPermissions, CategoryPermissions, GoalPermissions, CommentPermissions
 from django.db import transaction
 
 
@@ -89,7 +89,7 @@ class GoalListView(ListAPIView):
 class GoalView(RetrieveUpdateDestroyAPIView):
     model = Goal
     serializer_class = GoalSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, GoalPermissions]
 
     def get_queryset(self):
         return Goal.objects.filter(user=self.request.user)
@@ -102,7 +102,7 @@ class GoalView(RetrieveUpdateDestroyAPIView):
 
 class GoalCommentCreateView(generics.CreateAPIView):
     model = GoalComment
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, CommentPermissions]
     serializer_class = GoalCommentCreateSerializer
 
     def perform_create(self, serializer: GoalCommentCreateSerializer):
@@ -112,7 +112,7 @@ class GoalCommentCreateView(generics.CreateAPIView):
 class GoalCommentView(RetrieveUpdateDestroyAPIView):
     model = GoalComment
     serializer_class = GoalCommentSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, CommentPermissions]
 
     def get_queryset(self):
         return GoalComment.objects.filter(
@@ -127,7 +127,7 @@ class GoalCommentView(RetrieveUpdateDestroyAPIView):
 
 class GoalCommentListView(ListAPIView):
     model = GoalComment
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, CommentPermissions]
     serializer_class = GoalCommentSerializer
     pagination_class = LimitOffsetPagination
     filter_backends = [
@@ -139,7 +139,7 @@ class GoalCommentListView(ListAPIView):
 
     def get_queryset(self):
         goal_id = self.request.query_params.get("goal_id")
-        queryset = GoalComment.objects.all()
+        queryset = GoalComment.objects.filter(is_deleted=False)
         if goal_id:
             queryset = queryset.filter(goal_id=goal_id)
         return queryset
