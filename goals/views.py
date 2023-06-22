@@ -81,8 +81,8 @@ class GoalListView(ListAPIView):
     filterset_class = GoalDateFilter
 
     def get_queryset(self):
-        return Goal.objects.select_related("user").filter(
-            ~Q(status=4)
+        return Goal.objects.filter(
+            category__board__participants__user=self.request.user
         )
 
 
@@ -159,7 +159,7 @@ class BoardView(RetrieveUpdateDestroyAPIView):
             instance.save()
             instance.categories.update(is_deleted=True)
             Goal.objects.filter(category__board=instance).update(
-                status=Goal.Status.archived
+                status=Goal.Status.ARCHIVED
             )
         return instance
 

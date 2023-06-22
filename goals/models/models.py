@@ -29,19 +29,11 @@ class Goal(models.Model):
         verbose_name = "Цель"
         verbose_name_plural = "Цели"
 
-    STATUS_CHOICES = [
-        (1, "К выполнению"),
-        (2, "В процессе"),
-        (3, "Выполнено"),
-        (4, "Архив"),
-    ]
-
-    PRIORITY_CHOICES = [
-        (1, "Низкий"),
-        (2, "Средний"),
-        (3, "Высокий"),
-        (4, "Критический"),
-    ]
+    class Status(models.IntegerChoices):
+        PENDING = 1, 'Pending'
+        IN_PROGRESS = 2, 'In Progress'
+        COMPLETED = 3, 'Completed'
+        ARCHIVED = 4, 'Archived'
 
     title = models.CharField(verbose_name="Название", max_length=255)
     user = models.ForeignKey(CustomUser, verbose_name="Автор", on_delete=models.PROTECT)
@@ -50,8 +42,8 @@ class Goal(models.Model):
     description = models.TextField(verbose_name="Описание", null=True, blank=True)
     category = models.ForeignKey(GoalCategory, verbose_name="Категория", on_delete=models.CASCADE)
     due_date = models.DateTimeField(verbose_name="Дата выполнения", null=True)
-    status = models.PositiveSmallIntegerField(verbose_name="Статус", choices=STATUS_CHOICES, default=1)
-    priority = models.PositiveSmallIntegerField(verbose_name="Приоритет", choices=PRIORITY_CHOICES, default=1)
+    status = models.IntegerField(choices=Status.choices, default=Status.PENDING)
+    priority = models.PositiveSmallIntegerField(verbose_name="Приоритет", choices=Status.choices, default=Status.PENDING)
 
     def save(self, *args, **kwargs):
         if not self.id:  # Когда объект только создается, у него еще нет id
