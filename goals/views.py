@@ -12,7 +12,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Q
 from rest_framework import filters
 from .filters import GoalDateFilter
-from .permissions import BoardPermissions, CategoryPermissions, GoalPermissions, CommentPermissions
+from .permissions import BoardPermission, CategoryPermission, GoalPermission, GoalCommentPermission
 from django.db import transaction
 
 
@@ -45,7 +45,7 @@ class GoalCategoryListView(ListAPIView):
 class GoalCategoryView(RetrieveUpdateDestroyAPIView):
     model = GoalCategory
     serializer_class = GoalCategorySerializer
-    permission_classes = [permissions.IsAuthenticated, CategoryPermissions]
+    permission_classes = [permissions.IsAuthenticated, CategoryPermission]
 
     def get_queryset(self):
         return GoalCategory.objects.filter(
@@ -67,7 +67,7 @@ class GoalCreateView(generics.CreateAPIView):
 
 class GoalListView(ListAPIView):
     model = Goal
-    permission_classes = [permissions.IsAuthenticated, CategoryPermissions]
+    permission_classes = [permissions.IsAuthenticated, CategoryPermission]
     serializer_class = GoalSerializer
     pagination_class = LimitOffsetPagination
     filter_backends = [
@@ -89,7 +89,7 @@ class GoalListView(ListAPIView):
 class GoalView(RetrieveUpdateDestroyAPIView):
     model = Goal
     serializer_class = GoalSerializer
-    permission_classes = [permissions.IsAuthenticated, GoalPermissions]
+    permission_classes = [permissions.IsAuthenticated, GoalPermission]
 
     def get_queryset(self):
         return Goal.objects.filter(user=self.request.user)
@@ -102,7 +102,7 @@ class GoalView(RetrieveUpdateDestroyAPIView):
 
 class GoalCommentCreateView(generics.CreateAPIView):
     model = GoalComment
-    permission_classes = [permissions.IsAuthenticated, CommentPermissions]
+    permission_classes = [permissions.IsAuthenticated, GoalCommentPermission]
     serializer_class = GoalCommentCreateSerializer
 
     def perform_create(self, serializer: GoalCommentCreateSerializer):
@@ -112,7 +112,7 @@ class GoalCommentCreateView(generics.CreateAPIView):
 class GoalCommentView(RetrieveUpdateDestroyAPIView):
     model = GoalComment
     serializer_class = GoalCommentSerializer
-    permission_classes = [permissions.IsAuthenticated, CommentPermissions]
+    permission_classes = [permissions.IsAuthenticated, GoalCommentPermission]
 
     def get_queryset(self):
         return GoalComment.objects.filter(
@@ -127,7 +127,7 @@ class GoalCommentView(RetrieveUpdateDestroyAPIView):
 
 class GoalCommentListView(ListAPIView):
     model = GoalComment
-    permission_classes = [permissions.IsAuthenticated, CommentPermissions]
+    permission_classes = [permissions.IsAuthenticated, GoalCommentPermission]
     serializer_class = GoalCommentSerializer
     pagination_class = LimitOffsetPagination
     filter_backends = [
@@ -145,7 +145,7 @@ class GoalCommentListView(ListAPIView):
 
 class BoardView(RetrieveUpdateDestroyAPIView):
     model = Board
-    permission_classes = [permissions.IsAuthenticated, BoardPermissions]
+    permission_classes = [permissions.IsAuthenticated, BoardPermission]
     serializer_class = BoardSerializer
 
     def get_queryset(self):
