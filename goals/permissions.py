@@ -56,8 +56,11 @@ class GoalCommentPermission(permissions.BasePermission):
         if request.method in permissions.SAFE_METHODS:
             return BoardParticipant.objects.filter(user=request.user, board=obj.goal.category.board).exists()
 
-        return BoardParticipant.objects.filter(
-            user=request.user,
-            board=obj.goal.category.board,
-            role__in=[BoardParticipant.Role.owner, BoardParticipant.Role.writer]
-        ).exists()
+        return (
+            BoardParticipant.objects.filter(
+                user=request.user,
+                board=obj.goal.category.board,
+                role__in=[BoardParticipant.Role.owner, BoardParticipant.Role.writer]
+            ).exists()
+            and obj.user == request.user  # Проверка, что комментарий принадлежит пользователю
+        )

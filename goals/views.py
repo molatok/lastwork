@@ -127,7 +127,7 @@ class GoalCommentView(RetrieveUpdateDestroyAPIView):
 
 class GoalCommentListView(ListAPIView):
     model = GoalComment
-    permission_classes = [permissions.IsAuthenticated, GoalCommentPermission]
+    permission_classes = [GoalCommentPermission]
     serializer_class = GoalCommentSerializer
     pagination_class = LimitOffsetPagination
     filter_backends = [
@@ -138,9 +138,7 @@ class GoalCommentListView(ListAPIView):
     ordering = ["-created"]
 
     def get_queryset(self):
-        goal_id = self.kwargs.get("goal_id")
-        queryset = GoalComment.objects.filter(is_deleted=False, goal_id=goal_id)
-        return queryset
+        return self.model.objects.filter(goal__category__board__participants__user=self.request.user)
 
 
 class BoardView(RetrieveUpdateDestroyAPIView):
