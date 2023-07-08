@@ -28,6 +28,7 @@ jobs:
       SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
       SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
       HOST: ${{ secrets.HOST }}
+      TG_TOKEN: ${{ secrets.TG_TOKEN }}
 
     steps:
       - name: clone code

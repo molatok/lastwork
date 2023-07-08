@@ -2,7 +2,7 @@ version: "3.9"
 
 services:
   frontend:
-    image: sermalenk/skypro-front:lesson-37
+    image: sermalenk/skypro-front:lesson-38
     ports:
       - "80:80"
     depends_on:
@@ -23,6 +23,16 @@ services:
         condition: service_healthy
     ports:
       - "8000:8000"
+  bot:
+    build:
+      context: .
+    restart: always
+    depends_on:
+      - migrations
+      - db
+    command: python manage.py runbot
+    volumes:
+      - ./.env:/app/.env
   migrations:
     build: .
     depends_on:

@@ -2,7 +2,7 @@ version: "3.9"
 
 services:
   frontend:
-    image: sermalenk/skypro-front:lesson-37
+    image: sermalenk/skypro-front:lesson-38
     restart: always
     depends_on:
       - api
@@ -48,7 +48,16 @@ services:
         condition: service_healthy
     command: >
       sh -c "python3 manage.py migrate"
-
+  bot:
+    build:
+      context: .
+    restart: always
+    depends_on:
+      - migrations
+      - db
+    command: python manage.py runbot
+    volumes:
+      - ./.env:/app/.env
   db:
     image: postgres:latest
     environment:
