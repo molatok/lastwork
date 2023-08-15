@@ -31,6 +31,18 @@ services:
       - "8000:8000"
     command: ["python3", "manage.py", "runserver", "0.0.0.0:8000"]
 
+  bot:
+    image: molatok/lastwork:$GITHUB_REF_NAME-$GITHUB_RUN_ID
+    restart: always
+    depends_on:
+      migration:
+        condition: service_completed_successfully
+      db:
+        condition: service_healthy
+    command: python manage.py runbot
+    volumes:
+      - ./.env:/app/.env
+      -
   migrations:
     image: molatok/lastwork:$GITHUB_REF_NAME-$GITHUB_RUN_ID
     environment:
