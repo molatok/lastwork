@@ -5,7 +5,7 @@ from bot.tg.bot import TgBot
 
 
 class Command(BaseCommand):
-    help = "Команда для запуска telegram бота"
+    help = 'Команда для запуска telegram бота'
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

@@ -1,3 +1,4 @@
+from django.shortcuts import render
 from rest_framework import generics
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
@@ -10,13 +11,13 @@ class TgUserUpdate(generics.UpdateAPIView):
     model = TgUser
     serializer_class = TgUserVerCodSerializer
     permission_classes = (IsAuthenticated,)
-    http_method_names = ("patch",)
+    http_method_names = ('patch',)
 
     def get_object(self):
         try:
             obj = self.model.objects.get(verification_code=self.request.data.get('verification_code'))
         except self.model.DoesNotExist:
-            raise ValidationError({"verification_code": "Неправильный верификационный код"})
+            raise ValidationError({'verification_code': 'Неправильный верификационный код'})
 
         return obj
 

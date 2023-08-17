@@ -42,7 +42,7 @@ services:
     command: python manage.py runbot
     volumes:
       - ./.env:/app/.env
-      -
+
   migrations:
     image: molatok/lastwork:$GITHUB_REF_NAME-$GITHUB_RUN_ID
     environment:
