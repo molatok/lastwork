@@ -11,14 +11,6 @@ class TgBot:
         self.tg_client = tg_client
 
     def get_goals_user(self, user_tg: TgUser) -> None:
-        """
-        Отправка всех целей пользователя в telegram.
-        Если целей у пользователя нет, то отправить сообщение, что целей нет.
-        Args:
-            user_tg: объект TgUser
-        Returns:
-            None
-        """
         goals = (Goal.objects.filter(category__board__participants__user=user_tg.user).
                  exclude(status=Goal.Status.archived))
 
@@ -39,16 +31,6 @@ class TgBot:
             )
 
     def check_user(self, user_ud: int, chat_id: int):
-        """
-        Проверка, что пользователь есть в базе данных.
-        Если пользователя нет в базе, то создание записи в TgUser и ожидание подтверждение верификационного кода на сайте.
-        Если TgUser найден, но не закреплен за User, то создаем другой код верификации и просим его подтвердить его.
-        Args:
-            user_ud: номер пользователя в телеграмме
-            chat_id: номер чата пользователя в телеграмме
-        Returns:
-            TgUser или None
-        """
         user_tg, created = TgUser.objects.get_or_create(user_ud=user_ud, chat_id=chat_id)
 
         ver_cod = generator_code_verification()
@@ -75,17 +57,7 @@ class TgBot:
         return user_tg
 
     def create_goal(self, category: GoalCategory, user_tg: TgUser) -> None:
-        """
-        Метод создания новой цели в выбранной категории
-        Args:
-            category: GoalCategory - выбранная категория
-            user_tg: TgUser - пользователь который создает цель
-        Returns:
-            None
-        """
         self.tg_client.send_message(chat_id=user_tg.chat_id, text=f'Введите заголовок цели')
-
-        # вход в состояния ожидания названия для создаваемой цели
         flag = True
         while flag:
             response = self.tg_client.get_updates(offset=self.offset)
@@ -107,14 +79,6 @@ class TgBot:
                     flag = False
 
     def choice_category(self, user_tg: TgUser) -> None:
-        """
-        Метод выдает все категории пользователя в telegram и просит выбрать из этого
-        списка категорию в которой будет создана новая цель.
-        Args:
-            user_tg: TgUser
-        Returns:
-            None
-        """
         categories = GoalCategory.objects.filter(
             board__participants__user=user_tg.user,
             board__participants__role__in=(BoardParticipant.Role.owner, BoardParticipant.Role.writer)
@@ -134,7 +98,6 @@ class TgBot:
                   '\n' + '-' * 10)
         )
 
-        # вход в состояния ожидания категории от пользователя
         flag = True
         while flag:
             response = self.tg_client.get_updates(offset=self.offset)
@@ -154,9 +117,6 @@ class TgBot:
                     self.tg_client.send_message(chat_id=user_tg.chat_id, text=f'Такой категории нет')
 
     def run(self) -> None:
-        """
-        Метод запускает бота
-        """
         while True:
             response = self.tg_client.get_updates(offset=self.offset)
             for item in response.result:
