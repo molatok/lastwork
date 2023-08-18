@@ -5,6 +5,7 @@ from rest_framework.permissions import IsAuthenticated
 
 from bot.models import TgUser
 from bot.serializers import TgUserVerCodSerializer
+from bot.tg import tg_client
 
 
 class TgUserUpdate(generics.UpdateAPIView):
@@ -23,3 +24,8 @@ class TgUserUpdate(generics.UpdateAPIView):
 
     def perform_update(self, serializer):
         serializer.save(user=self.request.user)
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context['tg_client'] = tg_client
+        return context
