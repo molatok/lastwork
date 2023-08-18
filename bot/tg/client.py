@@ -3,17 +3,36 @@ import requests
 from bot.tg.dc import GetUpdatesResponse, SendMessageResponse, get_updates_schema, send_message_schema
 
 
-import requests
-
 class TgClient:
     def __init__(self, token):
         self.token = token
 
     def get_url(self, method: str):
-        # Оставляем эту функцию без изменений
+        """
+                URL метод для запроса к telegram боту
+                Args:
+                    method: какой запрос будет отправлен боту
+                Returns:
+                    str
+                """
+        return f'https://api.telegram.org/bot{self.token}/{method}'
 
-    def get_updates(self, offset: int = 0, timeout: int = 60):
-        # Оставляем эту функцию без изменений
+    def get_updates(self, offset: int = 0, timeout: int = 60) -> GetUpdatesResponse:
+        """
+                Получения входящих обновлений от пользователя.
+                Args:
+                    offset: int
+                    timeout: int
+                Returns:
+                    GetUpdatesResponse
+                """
+        response = requests.get(self.get_url(f'getUpdates?offset={offset}&timeout={timeout}&'
+                                             f"allowed_updates=['update_id','message']"))
+        json_data = response.json()
+        print(json_data)
+        result = get_updates_schema().load(json_data)
+
+        return result
 
     def send_message(self, chat_id: int, text: str):
         """
@@ -35,7 +54,6 @@ class TgClient:
         result = send_message_schema().load(json_data)
 
         return result
-
 
 
 
