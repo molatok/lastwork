@@ -41,7 +41,7 @@ services:
         condition: service_healthy
     environment:
       SECRET_KEY: ${SECRET_KEY}
-      TG_TOKEN: ${SECRET_KEY}
+      TG_TOKEN: ${TG_TOKEN}
     command: python manage.py runbot
 
   migrations:
