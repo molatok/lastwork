@@ -12,7 +12,7 @@ class TgBot:
 
     def get_goals_user(self, user_tg: TgUser) -> None:
         goals = (Goal.objects.filter(category__board__participants__user=user_tg.user).
-                 exclude(status=Goal.Status.archived))
+                 exclude(status=Goal.Status.ARCHIVED))
 
         if not goals:
             self.tg_client.send_message(
