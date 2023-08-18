@@ -51,9 +51,8 @@ class TgClient:
 
         response = requests.post(url, json=data)
         json_data = response.json()
-        result = send_message_schema().load(json_data)
 
-        return result
+        return json_data
 
 
 
