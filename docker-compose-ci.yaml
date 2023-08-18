@@ -39,9 +39,10 @@ services:
         condition: service_completed_successfully
       db:
         condition: service_healthy
+    environment:
+      SECRET_KEY: ${SECRET_KEY}
+      TG_TOKEN: ${SECRET_KEY}
     command: python manage.py runbot
-    volumes:
-      - ./.env:/app/.env
 
   migrations:
     image: molatok/lastwork:$GITHUB_REF_NAME-$GITHUB_RUN_ID
