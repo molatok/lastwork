@@ -42,6 +42,8 @@ services:
     environment:
       SECRET_KEY: ${SECRET_KEY}
       TG_TOKEN: ${TG_TOKEN}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_PORT: ${POSTGRES_PORT}
     command: python manage.py runbot
 
   migrations:
