@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from rest_framework import generics
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
@@ -9,6 +8,16 @@ from bot.tg import tg_client
 
 
 class TgUserUpdate(generics.UpdateAPIView):
+    """
+        Представление для обновления информации о пользователе Telegram.
+        Позволяет обновлять данные о пользователе на основе верификационного кода.
+        Для использования требуется аутентификация пользователя.
+
+        Методы:
+        - get_object: Получает объект TgUser на основе верификационного кода.
+        - perform_update: Выполняет обновление данных с сохранением аутентифицированного пользователя.
+        - get_serializer_context: Добавляет в контекст сериализатора экземпляр tg_client для отправки сообщений Telegram.
+        """
     model = TgUser
     serializer_class = TgUserVerCodSerializer
     permission_classes = (IsAuthenticated,)

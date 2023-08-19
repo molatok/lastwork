@@ -1,11 +1,11 @@
 from django.db import models
-from django.utils import timezone
 from core.models import CustomUser
 from django.utils import timezone
 from .board import Board
 
 
 class GoalCategory(models.Model):
+    "категория целей"
     class Meta:
         verbose_name = "Категория"
         verbose_name_plural = "Категории"
@@ -25,6 +25,7 @@ class GoalCategory(models.Model):
 
 
 class Goal(models.Model):
+    "цель"
     class Meta:
         verbose_name = "Цель"
         verbose_name_plural = "Цели"
@@ -53,6 +54,7 @@ class Goal(models.Model):
 
 
 class GoalComment(models.Model):
+    "комментарий к цели"
     class Meta:
         verbose_name = "Комментарий"
         verbose_name_plural = "Комментарии"
@@ -69,5 +71,3 @@ class GoalComment(models.Model):
             self.created = timezone.now()
         self.updated = timezone.now()
         return super().save(*args, **kwargs)
-
-

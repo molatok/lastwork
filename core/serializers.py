@@ -2,7 +2,6 @@ from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth import authenticate
 from django.core.exceptions import ValidationError
 from rest_framework import serializers
-from rest_framework.exceptions import AuthenticationFailed
 from .models import CustomUser
 
 
@@ -64,7 +63,7 @@ class UserPasswordUpdateSerializer(serializers.Serializer):
         """
         password_old = attrs.get('old_password')
 
-        user: User = self.instance
+        user: CustomUser = self.instance
         if not user.check_password(password_old):
             raise ValidationError({'old_password': 'is incorrect'})
         return attrs
