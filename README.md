@@ -21,7 +21,7 @@ POSTGRES_USER=имя пользователя бд
 POSTGRES_PASSWORD=пароль пользователя бд
 POSTGRES_HOST=хост бд
 POSTGRES_PORT=пароль бд
-SOCIAL_AUTH_VK_OAUTH2_KEY=ключа приложения социальной сети
+SOCIAL_AUTH_VK_OAUTH2_KEY=ключ приложения социальной сети
 SOCIAL_AUTH_VK_OAUTH2_SECRET=секрет приложения социальной сети
 TG_TOKEN=токен бота
 
