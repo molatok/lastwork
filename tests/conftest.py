@@ -8,9 +8,9 @@ from tests import factories
 @pytest.fixture
 def new_user(db):
     user = CustomUser.objects.create_user(
-        username='testname',
+        username='testuser',
         email='test@mail.ru',
-        password='testSuper1Password'
+        password='7654321!Ba'
     )
     return user
 
@@ -18,7 +18,7 @@ def new_user(db):
 @pytest.fixture
 def auth_client(new_user):
     client = APIClient()
-    client.login(username='testname', password='testSuper1Password')
+    client.login(username='testuser', password='7654321!Ba')
     return client
 
 
